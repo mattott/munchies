@@ -1,4 +1,4 @@
-package com.ottmatt.munchies;
+package com.ottmatt.munchies.parsers;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -11,11 +11,11 @@ import java.util.List;
 
 import android.util.JsonReader;
 
-public class PlacesParser {
-	String placesUrl = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=AIzaSyDQTv-BHPQiKVZiCapQX0ELaQHnOOHRA6M&types=food&location=37.347627,-122.062515&radius=5000&sensor=false&opennow=true";
+public class PlaceSearchParser {
+	String placesUrl = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=AIzaSyDQTv-BHPQiKVZiCapQX0ELaQHnOOHRA6M&types=food&radius=5000&sensor=false&opennow=true&location=";
 
-	public List retrieveStream() throws IOException {
-		URL url = new URL(placesUrl);
+	public List<Message> retrieveStream(String location) throws IOException {
+		URL url = new URL(placesUrl + location);
 		HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
 		try {
 			InputStream in = new BufferedInputStream(urlConn.getInputStream());
@@ -28,7 +28,7 @@ public class PlacesParser {
 		return null;
 	}
 
-	public List readStream(InputStream in) throws IOException {
+	public List<Message> readStream(InputStream in) throws IOException {
 		JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
 		try {
 			return readMessagesArray(reader);
@@ -37,8 +37,9 @@ public class PlacesParser {
 		}
 	}
 
-	public List readMessagesArray(JsonReader reader) throws IOException {
-		List messages = new ArrayList();
+	public List<Message> readMessagesArray(JsonReader reader)
+			throws IOException {
+		List<Message> messages = new ArrayList<Message>();
 		reader.beginObject();
 		while (reader.hasNext()) {
 			String token = reader.nextName();
@@ -56,7 +57,7 @@ public class PlacesParser {
 
 	public Message readMessage(JsonReader reader) throws IOException {
 		String icon = null;
-		String id = null;
+		String reference = null;
 		String store_name = null;
 		int price_level = -1;
 		double rating = -1.0;
@@ -67,8 +68,8 @@ public class PlacesParser {
 			String name = reader.nextName();
 			if (name.equals("icon"))
 				icon = reader.nextString();
-			else if (name.equals("id"))
-				id = reader.nextString();
+			else if (name.equals("reference"))
+				reference = reader.nextString();
 			else if (name.equals("name"))
 				store_name = reader.nextString();
 			else if (name.equals("price_level"))
@@ -82,21 +83,22 @@ public class PlacesParser {
 		}
 		reader.endObject();
 
-		return new Message(icon, id, store_name, vicinity, price_level, rating);
+		return new Message(icon, reference, store_name, vicinity, price_level,
+				rating);
 	}
 
 	public class Message {
 		public String mIcon;
-		public String mId;
+		public String mReference;
 		public String mStore;
 		public String mVicinity;
 		public int mPrice_level;
 		public double mRating;
 
-		public Message(String icon, String id, String store_name,
+		public Message(String icon, String reference, String store_name,
 				String vicinity, int price_level, double rating) {
 			mIcon = icon;
-			mId = id;
+			mReference = reference;
 			mStore = store_name;
 			mVicinity = vicinity;
 			mPrice_level = price_level;
@@ -107,8 +109,8 @@ public class PlacesParser {
 			return mIcon;
 		}
 
-		public String getId() {
-			return mId;
+		public String getReference() {
+			return mReference;
 		}
 
 		public String getStore() {

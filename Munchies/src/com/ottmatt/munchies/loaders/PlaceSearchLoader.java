@@ -1,4 +1,4 @@
-package com.ottmatt.munchies;
+package com.ottmatt.munchies.loaders;
 
 import java.io.IOException;
 import java.util.List;
@@ -8,17 +8,22 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.util.Log;
 
-import com.ottmatt.munchies.PlacesParser.Message;
+import com.ottmatt.munchies.parsers.PlaceSearchParser;
+import com.ottmatt.munchies.parsers.PlaceSearchParser.Message;
 
-public class PlacesLoader extends AsyncTaskLoader<List<Message>> {
+public class PlaceSearchLoader extends AsyncTaskLoader<List<Message>> {
 	List<Message> mPlaces;
+	String mResource;
+
 	final InterestingConfigChanges mLastConfig = new InterestingConfigChanges();
 
-	public PlacesLoader(Context context) {
+	public PlaceSearchLoader(Context context) {
 		super(context);
-		// TODO Auto-generated constructor stub
+	}
+
+	public void setParams(String input) {
+		mResource = input;
 	}
 
 	/**
@@ -28,13 +33,12 @@ public class PlacesLoader extends AsyncTaskLoader<List<Message>> {
 	 */
 	@Override
 	public List<Message> loadInBackground() {
-		PlacesParser parser = new PlacesParser();
+		PlaceSearchParser sParser = new PlaceSearchParser();
 		try {
-			List<Message> places = parser.retrieveStream();
+			List<Message> places = sParser.retrieveStream(mResource);
 			return places;
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;

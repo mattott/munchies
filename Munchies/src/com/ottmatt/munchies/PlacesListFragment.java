@@ -6,21 +6,29 @@ import roboguice.inject.InjectResource;
 import android.app.ListFragment;
 import android.app.LoaderManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.Loader;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
-import com.ottmatt.munchies.PlacesParser.Message;
+import com.ottmatt.munchies.loaders.PlaceDetailsLoader;
+import com.ottmatt.munchies.loaders.PlaceSearchLoader;
+import com.ottmatt.munchies.parsers.PlaceSearchParser.Message;
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class PlacesListFragment extends ListFragment implements
-		LoaderManager.LoaderCallbacks<List<Message>> {
+		LoaderManager.LoaderCallbacks<Object> {
 	@InjectResource(R.string.no_results)
 	String no_results;
 	PlacesAdapter mAdapter;
+	String mReference = null;
+	String mUrl = "";
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -33,25 +41,50 @@ public class PlacesListFragment extends ListFragment implements
 	}
 
 	@Override
-	public Loader<List<Message>> onCreateLoader(int id, Bundle args) {
-		return new PlacesLoader(getActivity());
+	public void onListItemClick(ListView l, View v, int position, long id) {
+		mReference = null;
+		Message item = (Message) getListView().getItemAtPosition(position);
+		mReference = item.getReference();
+		getLoaderManager().initLoader(1, null, this);
 	}
 
 	@Override
-	public void onLoadFinished(Loader<List<Message>> loader, List<Message> data) {
-		mAdapter.setData(data);
-		if (isResumed())
-			setListShown(true);
-		else
-			setListShownNoAnimation(true);
+	public Loader onCreateLoader(int id, Bundle args) {
+		if (id == 0) {
+			PlaceSearchLoader sLoader = new PlaceSearchLoader(getActivity());
+			sLoader.setParams("37.347627,-122.062515");
+			return sLoader;
+		} else {
+			PlaceDetailsLoader dLoader = new PlaceDetailsLoader(getActivity());
+			dLoader.setParams(mReference);
+			return dLoader;
+		}
 	}
 
 	@Override
-	public void onLoaderReset(Loader<List<Message>> loader) {
-		mAdapter.setData(null);
+	public void onLoadFinished(Loader loader, Object data) {
+		if (loader.getId() == 1) {
+			mUrl = (String) data;
+			Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+					Uri.parse(mUrl));
+			startActivity(intent);
+			getLoaderManager().destroyLoader(1);
+		} else {
+			mAdapter.setData((List) data);
+			if (isResumed())
+				setListShown(true);
+			else
+				setListShownNoAnimation(true);
+		}
 	}
 
-	public static class PlacesAdapter extends ArrayAdapter<Message> {
+	@Override
+	public void onLoaderReset(Loader loader) {
+		if (loader.getId() == 0)
+			mAdapter.setData(null);
+	}
+
+	public static class PlacesAdapter extends ArrayAdapter {
 		private final LayoutInflater mInflater;
 
 		public PlacesAdapter(Context context) {
@@ -60,7 +93,7 @@ public class PlacesListFragment extends ListFragment implements
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		}
 
-		public void setData(List<Message> data) {
+		public void setData(List data) {
 			clear();
 			if (data != null)
 				addAll(data);
@@ -75,7 +108,7 @@ public class PlacesListFragment extends ListFragment implements
 						false);
 			else
 				view = convertView;
-			Message item = getItem(position);
+			Message item = (Message) getItem(position);
 			((TextView) view.findViewById(R.id.rating)).setText(Double
 					.toString(item.getRating()));
 			((TextView) view.findViewById(R.id.places_name)).setText(item

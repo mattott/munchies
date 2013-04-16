@@ -35,7 +35,7 @@
             android:id="@+id/vicinity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textIsSelectable="true" />
+            android:textIsSelectable="false" />
     </LinearLayout>
 
 </LinearLayout>
