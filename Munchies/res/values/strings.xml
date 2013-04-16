@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Munchies</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="placesUrl">http://www.maps.googleapis.com/maps/api/place/nearbysearch/json?key=AIzaSyDQTv-BHPQiKVZiCapQX0ELaQHnOOHRA6M&#38;type=food&#38;location=37.347627,-122.062515&#38;opennow=true&#38;sensor=false&#38;radius=5000</string>
+	<string name="no_results">No Results</string>
+</resources>
