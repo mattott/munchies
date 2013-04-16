@@ -8,7 +8,6 @@ import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Loader;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,8 +78,6 @@ public class PlacesListFragment extends ListFragment implements
 			Message item = getItem(position);
 			((TextView) view.findViewById(R.id.rating)).setText(Double
 					.toString(item.getRating()));
-			((TextView) view.findViewById(R.id.price_level)).setText(Integer
-					.toString(item.getPriceLevel()));
 			((TextView) view.findViewById(R.id.places_name)).setText(item
 					.getStore());
 			((TextView) view.findViewById(R.id.vicinity)).setText(item

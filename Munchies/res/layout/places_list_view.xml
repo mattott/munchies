@@ -7,37 +7,35 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:paddingLeft="10dp" >
 
         <TextView
             android:id="@+id/rating"
-            android:textIsSelectable="false"
+            style="@style/PlacesRating"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
-
-        <TextView
-            android:id="@+id/price_level"
-            android:textIsSelectable="false"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content"
+            android:textIsSelectable="false" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:paddingLeft="10dp" >
 
         <TextView
             android:id="@+id/places_name"
-            android:textIsSelectable="false"
+            style="@style/PlacesName"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content"
+            android:textIsSelectable="false" />
 
         <TextView
             android:id="@+id/vicinity"
-            android:textIsSelectable="true"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content"
+            android:textIsSelectable="true" />
     </LinearLayout>
 
 </LinearLayout>
