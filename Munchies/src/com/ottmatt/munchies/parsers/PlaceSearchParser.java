@@ -12,7 +12,7 @@ import java.util.List;
 import android.util.JsonReader;
 
 public class PlaceSearchParser {
-	String placesUrl = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=AIzaSyDQTv-BHPQiKVZiCapQX0ELaQHnOOHRA6M&types=food&radius=5000&sensor=false&opennow=true&location=";
+	String placesUrl = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=AIzaSyDQTv-BHPQiKVZiCapQX0ELaQHnOOHRA6M&types=food&sensor=false&rankby=distance&opennow=true&location=";
 
 	public List<Message> retrieveStream(String location) throws IOException {
 		URL url = new URL(placesUrl + location);
