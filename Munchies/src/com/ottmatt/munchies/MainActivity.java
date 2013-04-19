@@ -21,7 +21,7 @@ public class MainActivity extends Activity {
 			gpsButton = new Button(this, null);
 		if (searchView == null)
 			searchView = new SearchView(this);
-		PlacesListFragment places = new PlacesListFragment();
+		final PlacesListFragment places = new PlacesListFragment();
 		FragmentTransaction ft = getFragmentManager().beginTransaction();
 		ft.add(0, places);
 		ft.commit();

@@ -14,7 +14,7 @@ import com.ottmatt.munchies.parsers.PlaceSearchParser.Message;
 
 public class PlaceSearchLoader extends AsyncTaskLoader<List<Message>> {
 	List<Message> mPlaces;
-	String mResource;
+	String mResource = "";
 
 	final InterestingConfigChanges mLastConfig = new InterestingConfigChanges();
 
@@ -22,8 +22,8 @@ public class PlaceSearchLoader extends AsyncTaskLoader<List<Message>> {
 		super(context);
 	}
 
-	public void setParams(String input) {
-		mResource = input;
+	public void setLocation(String location) {
+		mResource = location;
 	}
 
 	/**
@@ -168,5 +168,4 @@ public class PlaceSearchLoader extends AsyncTaskLoader<List<Message>> {
 			return false;
 		}
 	}
-
 }

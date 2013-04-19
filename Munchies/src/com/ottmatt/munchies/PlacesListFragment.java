@@ -8,6 +8,9 @@ import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -23,10 +26,11 @@ import com.ottmatt.munchies.parsers.PlaceSearchParser.Message;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class PlacesListFragment extends ListFragment implements
-		LoaderManager.LoaderCallbacks<Object> {
+		LoaderManager.LoaderCallbacks<Object>, LocationListener {
 	@InjectResource(R.string.no_results)
 	String no_results;
 	PlacesAdapter mAdapter;
+	LocationManager mLocationManager;
 	String mReference = null;
 	String mUrl = "";
 
@@ -37,7 +41,10 @@ public class PlacesListFragment extends ListFragment implements
 		mAdapter = new PlacesAdapter(getActivity());
 		setListAdapter(mAdapter);
 		setListShown(false);
-		getLoaderManager().initLoader(0, null, this);
+		mLocationManager = (LocationManager) getActivity().getSystemService(
+				Context.LOCATION_SERVICE);
+		mLocationManager.requestLocationUpdates(
+				LocationManager.NETWORK_PROVIDER, 1000, 0, this);
 	}
 
 	@Override
@@ -52,7 +59,7 @@ public class PlacesListFragment extends ListFragment implements
 	public Loader onCreateLoader(int id, Bundle args) {
 		if (id == 0) {
 			PlaceSearchLoader sLoader = new PlaceSearchLoader(getActivity());
-			sLoader.setParams("37.347627,-122.062515");
+			sLoader.setLocation(mReference);
 			return sLoader;
 		} else {
 			PlaceDetailsLoader dLoader = new PlaceDetailsLoader(getActivity());
@@ -75,6 +82,7 @@ public class PlacesListFragment extends ListFragment implements
 				setListShown(true);
 			else
 				setListShownNoAnimation(true);
+			mLocationManager.removeUpdates(this);
 		}
 	}
 
@@ -118,6 +126,30 @@ public class PlacesListFragment extends ListFragment implements
 
 			return view;
 		}
+	}
+
+	@Override
+	public void onLocationChanged(Location location) {
+		mReference = location.getLatitude() + "," + location.getLongitude();
+		getLoaderManager().initLoader(0, null, this);
+	}
+
+	@Override
+	public void onProviderDisabled(String provider) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onProviderEnabled(String provider) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onStatusChanged(String provider, int status, Bundle extras) {
+		// TODO Auto-generated method stub
+
 	}
 
 }
