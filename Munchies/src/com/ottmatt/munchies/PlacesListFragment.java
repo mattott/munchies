@@ -31,7 +31,8 @@ public class PlacesListFragment extends ListFragment implements
 	String no_results;
 	PlacesAdapter mAdapter;
 	LocationManager mLocationManager;
-	String mReference = null;
+	Location mStartLocation;
+	String mReference;
 	String mUrl = "";
 
 	@Override
@@ -44,12 +45,11 @@ public class PlacesListFragment extends ListFragment implements
 		mLocationManager = (LocationManager) getActivity().getSystemService(
 				Context.LOCATION_SERVICE);
 		mLocationManager.requestLocationUpdates(
-				LocationManager.NETWORK_PROVIDER, 1000, 0, this);
+				LocationManager.NETWORK_PROVIDER, 1000, 10, this);
 	}
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
-		mReference = null;
 		Message item = (Message) getListView().getItemAtPosition(position);
 		mReference = item.getReference();
 		getLoaderManager().initLoader(1, null, this);
@@ -59,7 +59,7 @@ public class PlacesListFragment extends ListFragment implements
 	public Loader onCreateLoader(int id, Bundle args) {
 		if (id == 0) {
 			PlaceSearchLoader sLoader = new PlaceSearchLoader(getActivity());
-			sLoader.setLocation(mReference);
+			sLoader.setLocation(mStartLocation);
 			return sLoader;
 		} else {
 			PlaceDetailsLoader dLoader = new PlaceDetailsLoader(getActivity());
@@ -117,8 +117,8 @@ public class PlacesListFragment extends ListFragment implements
 			else
 				view = convertView;
 			Message item = (Message) getItem(position);
-			((TextView) view.findViewById(R.id.rating)).setText(Double
-					.toString(item.getRating()));
+			((TextView) view.findViewById(R.id.rating)).setText((item
+					.getDistance()));
 			((TextView) view.findViewById(R.id.places_name)).setText(item
 					.getStore());
 			((TextView) view.findViewById(R.id.vicinity)).setText(item
@@ -130,7 +130,7 @@ public class PlacesListFragment extends ListFragment implements
 
 	@Override
 	public void onLocationChanged(Location location) {
-		mReference = location.getLatitude() + "," + location.getLongitude();
+		mStartLocation = location;
 		getLoaderManager().initLoader(0, null, this);
 	}
 

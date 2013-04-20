@@ -8,13 +8,15 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.location.Location;
 
 import com.ottmatt.munchies.parsers.PlaceSearchParser;
 import com.ottmatt.munchies.parsers.PlaceSearchParser.Message;
 
 public class PlaceSearchLoader extends AsyncTaskLoader<List<Message>> {
 	List<Message> mPlaces;
-	String mResource = "";
+	Location mStartLocation;
+	double mLat, mLng;
 
 	final InterestingConfigChanges mLastConfig = new InterestingConfigChanges();
 
@@ -22,8 +24,8 @@ public class PlaceSearchLoader extends AsyncTaskLoader<List<Message>> {
 		super(context);
 	}
 
-	public void setLocation(String location) {
-		mResource = location;
+	public void setLocation(Location startLocation) {
+		mStartLocation = startLocation;
 	}
 
 	/**
@@ -35,7 +37,7 @@ public class PlaceSearchLoader extends AsyncTaskLoader<List<Message>> {
 	public List<Message> loadInBackground() {
 		PlaceSearchParser sParser = new PlaceSearchParser();
 		try {
-			List<Message> places = sParser.retrieveStream(mResource);
+			List<Message> places = sParser.retrieveStream(mStartLocation);
 			return places;
 
 		} catch (IOException e) {
