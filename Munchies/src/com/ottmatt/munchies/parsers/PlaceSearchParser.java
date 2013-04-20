@@ -12,9 +12,10 @@ import java.util.List;
 import android.util.JsonReader;
 
 public class PlaceSearchParser {
-	String placesUrl = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=AIzaSyDQTv-BHPQiKVZiCapQX0ELaQHnOOHRA6M&types=food&sensor=false&rankby=distance&opennow=true&location=";
-
+	protected final String placesUrl = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=AIzaSyDQTv-BHPQiKVZiCapQX0ELaQHnOOHRA6M&types=food&sensor=false&rankby=distance&opennow=true&location=";
+	private String mLocation;
 	public List<Message> retrieveStream(String location) throws IOException {
+		mLocation = location;
 		URL url = new URL(placesUrl + location);
 		HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
 		try {
@@ -76,7 +77,7 @@ public class PlaceSearchParser {
 				price_level = reader.nextInt();
 			else if (name.equals("rating"))
 				rating = reader.nextDouble();
-			else if (name.equals("vicinity"))
+			else if (name.equals("geometry"))
 				vicinity = reader.nextString();
 			else
 				reader.skipValue();
@@ -85,6 +86,21 @@ public class PlaceSearchParser {
 
 		return new Message(icon, reference, store_name, vicinity, price_level,
 				rating);
+	}
+	
+	public double findDistanceFromLatLng(double lat1, double lng1, double lat2, double lng2) {
+		int earthRadius = 6371;
+		double dLat = toRad(lat1 - lat2);
+		double dLng = toRad(lng1 - lng2);
+		lat1 = toRad(lat1);
+		lat2 = toRad(lat2);
+		
+		double a = Math.pow(Math.sin(dLat/2), 2) + Math.pow(Math.sin(dLng/2), 2) * Math.cos(lat1) * Math.cos(lat2);
+		return earthRadius * a;
+	}
+	
+	public double toRad(double degree) {
+		return degree * (Math.PI / 180);
 	}
 
 	public class Message {
